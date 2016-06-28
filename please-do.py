@@ -17,7 +17,7 @@ def filter_issue(issue):
 
 
 def prepare_message(issue):
-    return '{0}\n\n--\n{1}'.format(issue['body'].encode('utf-8'), issue['url'])
+    return '{0}\n\n--\n{1}'.format(issue['body'].encode('utf-8'), issue['html_url'])
 
 
 def notify(issue):
@@ -26,10 +26,9 @@ def notify(issue):
     msg['From'] = config.EMAIL_FROM
     msg['Subject'] = 'New {0} issue: {1} (#{2})'.format(config.GITHUB_PROJECT, issue['title'].encode('utf-8'), issue['number'])
 
-    print msg.as_string().decode('utf-8')
-    return
     s = smtplib.SMTP(config.SMTP_SERVER)
-    s.starttls()
+    if config.SMTP_TLS:
+        s.starttls()
     if config.SMTP_LOGIN:
         s.login(config.SMTP_LOGIN, config.SMTP_PASSWORD)
     s.sendmail(config.EMAIL_FROM, config.EMAIL_TO, msg.as_string())
@@ -61,7 +60,9 @@ if __name__ == '__main__':
             max_date = issue['updated_at']
         if not filter_issue(issue):
             continue
-        notify(issue)
+        # Do not notify on the first run
+        if last_date is not None:
+            notify(issue)
 
     with open(STATE_FILE, 'w') as f:
         f.write(max_date)
