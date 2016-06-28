@@ -17,14 +17,14 @@ def filter_issue(issue):
 
 
 def prepare_message(issue):
-    return '{0}\n\n--\n{1}'.format(issue['body'].encode('utf-8'), issue['html_url'])
+    return '{0}\n\n--\n{1}\nForwarded with please-do.py'.format(issue['body'].encode('utf-8'), issue['html_url'])
 
 
 def notify(issue):
     msg = MIMEText(prepare_message(issue), _charset='utf-8')
     msg['To'] = '{0} <{1}>'.format(config.GITHUB_PROJECT, config.EMAIL_TO)
     msg['From'] = '{0} <{1}>'.format(issue['user']['login'], config.EMAIL_FROM)
-    msg['Subject'] = 'New {0} issue: {1} (#{2})'.format(config.GITHUB_PROJECT, issue['title'].encode('utf-8'), issue['number'])
+    msg['Subject'] = '{1} (#{2})'.format(issue['title'].encode('utf-8'), issue['number'])
 
     s = smtplib.SMTP(config.SMTP_SERVER)
     if config.SMTP_TLS:
