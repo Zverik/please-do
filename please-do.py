@@ -24,7 +24,7 @@ def notify(issue):
     msg = MIMEText(prepare_message(issue), _charset='utf-8')
     msg['To'] = '{0} <{1}>'.format(config.GITHUB_PROJECT, config.EMAIL_TO)
     msg['From'] = '{0} <{1}>'.format(issue['user']['login'], config.EMAIL_FROM)
-    msg['Subject'] = '{1} (#{2})'.format(issue['title'].encode('utf-8'), issue['number'])
+    msg['Subject'] = '{0} (#{1})'.format(issue['title'].encode('utf-8'), issue['number'])
 
     s = smtplib.SMTP(config.SMTP_SERVER)
     if config.SMTP_TLS:
