@@ -6,10 +6,10 @@ import config
 STATE_FILE = os.path.join(os.path.dirname(__file__), 'last_date.txt')
 
 
-def filter_issue(issue):
+def filter_issue(issue, last_date):
         if 'pull_request' in issue:
             return False
-        if issue['created_at'] < last_date:
+        if issue['created_at'] <= last_date:
             return False
         if issue['comments'] > 0:
             return False
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     for issue in data:
         if max_date < issue['updated_at']:
             max_date = issue['updated_at']
-        if not filter_issue(issue):
+        if not filter_issue(issue, last_date):
             continue
         # Do not notify on the first run
         if last_date is not None:
